@@ -17,20 +17,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+#include "utils.h"
 
-#pragma once
-#include "objects.h"
-#include "status.h"
-#include <SDL.h>
-
-typedef struct {
-  SDL_Window *window;
-  SDL_Renderer *renderer;
-  GS_Folder *root;
-} GS_WindowManager;
-
-GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out);
-
-void GS_DestroyWindowManager(GS_WindowManager *wm);
-
-GS_Status *GS_UpdateWindowManager(GS_WindowManager *wm);
+SDL_Color GS_MakeSDLColorRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+  SDL_Color result;
+  result.r = r;
+  result.g = g;
+  result.b = b;
+  result.a = a;
+  return result;
+}
+SDL_Color GS_MakeSDLColorRGB(uint8_t r, uint8_t g, uint8_t b) {
+  return GS_MakeSDLColorRGBA(r, g, b, 255);
+}
+SDL_Color GS_MakeSDLColorGrey(uint8_t contrast) {
+  return GS_MakeSDLColorRGB(contrast, contrast, contrast);
+}

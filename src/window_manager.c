@@ -19,25 +19,42 @@
 // SOFTWARE.
 
 #include "window_manager.h"
+#include "render.h"
 #include <stdlib.h>
 
-GS_Status *GS_CreateWindowManager(GS_WindowManager **out) {
+GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out) {
   GS_Folder *root;
   GS_RETURN_NOT_OK(GS_CreateFolder("root", NULL, &root))
   GS_WindowManager *wm = malloc(sizeof(GS_WindowManager));
   GS_NOT_NULL(wm);
   wm->root = root;
+  root->obj.center.x = w / 2;
+  root->obj.center.y = h / 2;
   wm->window =
       SDL_CreateWindow("Git Stories", SDL_WINDOWPOS_CENTERED,
-                       SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_OPENGL);
+                       SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL);
   GS_NOT_NULL(wm->window);
   wm->renderer = SDL_CreateRenderer(wm->window, -1, 0);
   GS_NOT_NULL(wm->renderer);
+  *out = wm;
   return GS_Ok();
 }
 void GS_DestroyWindowManager(GS_WindowManager *wm) {
-  SDL_DestroyWindow(wm->window);
   SDL_DestroyRenderer(wm->renderer);
+  SDL_DestroyWindow(wm->window);
   GS_DestroyFolder(wm->root);
   free(wm);
+}
+
+GS_Status *GS_UpdateWindowManager(GS_WindowManager *wm) {
+  SDL_SetRenderDrawColor(wm->renderer, 255, 255, 255, 255);
+  SDL_RenderClear(wm->renderer);
+
+  // TODO: Adjust coordinates
+
+  GS_RETURN_NOT_OK(GS_RenderFolder(wm->renderer, wm->root))
+
+  SDL_RenderPresent(wm->renderer);
+
+  return GS_Ok();
 }

@@ -18,40 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <SDL.h>
-#include <SDL2_gfx/SDL2_gfxPrimitives.h>
-const int SECOND = 1000;
+#include "objects.h"
+#include "status.h"
+#include "window_manager.h"
 
 int main(int argc, char *argv[]) {
-  if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-    return -1;
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+    SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+    return 1;
   }
-  SDL_Window *window =
-      SDL_CreateWindow("Hello World!", SDL_WINDOWPOS_CENTERED,
-                       SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+  GS_WindowManager *window_manager;
+  GS_PANIC_NOT_OK(GS_CreateWindowManager(1920, 1080, &window_manager))
 
-  SDL_Renderer *rend = SDL_CreateRenderer(window, -1, 0);
-
-  SDL_SetRenderDrawColor(rend, 0, 0, 0, SDL_ALPHA_OPAQUE);
-  SDL_RenderClear(rend);
-  SDL_SetRenderDrawColor(rend, 255, 255, 255, SDL_ALPHA_OPAQUE);
-  filledCircleRGBA(rend, 100, 100, 100, 100, 100, 100, 100);
-  SDL_RenderPresent(rend);
-
-  int working = 1;
+  bool working = true;
   while (working) {
     SDL_Event event;
     if (SDL_PollEvent(&event)) {
-      switch (event.type) {
-      case SDL_QUIT:
-        working = 0;
-        break;
+      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
+        working = false;
       }
     }
+    GS_WARN_NOT_OK(GS_UpdateWindowManager(window_manager))
   }
 
-  SDL_DestroyRenderer(rend);
-  SDL_DestroyWindow(window);
+  GS_DestroyWindowManager(window_manager);
   SDL_Quit();
   return 0;
 }

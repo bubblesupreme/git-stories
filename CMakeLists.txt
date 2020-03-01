@@ -9,7 +9,13 @@ include_directories(${SDL2_INCLUDE_DIRS} lib)
 
 add_subdirectory(lib)
 
-add_executable(git_stories src/main.c src/objects.c src/window_manager.c src/status.c)
+add_executable(git_stories
+        src/main.c
+        src/objects.c
+        src/window_manager.c
+        src/status.c
+        src/render.c
+        src/utils.c)
 IF (WIN32)
     target_link_libraries(git_stories mingw32 SDL2main SDL2 SDL2_gfx)
 else ()

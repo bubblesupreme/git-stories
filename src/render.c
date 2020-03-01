@@ -18,19 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once
-#include "objects.h"
-#include "status.h"
-#include <SDL.h>
+#include "render.h"
+GS_Status *renderCircle(SDL_Renderer *renderer, const GS_CircularObject *obj) {
+  filledCircleRGBA(renderer, obj->center.x, obj->center.y, obj->radius,
+                   obj->color.r, obj->color.g, obj->color.b, obj->color.a);
+  return GS_Ok();
+}
 
-typedef struct {
-  SDL_Window *window;
-  SDL_Renderer *renderer;
-  GS_Folder *root;
-} GS_WindowManager;
+GS_Status *GS_RenderFile(SDL_Renderer *renderer, const GS_File *file) {
+  GS_RETURN_NOT_OK(renderCircle(renderer, &file->obj))
+  return GS_Ok();
+}
 
-GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out);
-
-void GS_DestroyWindowManager(GS_WindowManager *wm);
-
-GS_Status *GS_UpdateWindowManager(GS_WindowManager *wm);
+GS_Status *GS_RenderFolder(SDL_Renderer *renderer, const GS_Folder *folder) {
+  GS_RETURN_NOT_OK(renderCircle(renderer, &folder->obj))
+  for (size_t i = 0; i < folder->files_count; i++) {
+    GS_RETURN_NOT_OK(GS_RenderFile(renderer, folder->files[i]))
+  }
+  for (size_t i = 0; i < folder->folders_count; i++) {
+    GS_RETURN_NOT_OK(GS_RenderFolder(renderer, folder->folders[i]))
+  }
+  return GS_Ok();
+}

@@ -87,6 +87,12 @@ GS_Status *GS_CreateFolder(char *name, GS_Folder *parent, GS_Folder **out) {
   GS_NOT_NULL(result)
   GS_PANIC_ON_ERROR(strcpy_s(result->name, GS_MAX_NAME_SIZE, name))
 
+  if (parent) {
+    result->obj.center = parent->obj.center;
+  }
+  result->obj.radius = GS_FOLDER_RADIUS;
+  result->obj.color = GS_MakeSDLColorRGB(32, 234, 123);
+
   result->files_count = 0;
   result->files_capacity = GS_INITIAL_FOLDER_CAPACITY;
   result->files = malloc(sizeof(GS_File *) * result->files_capacity);
@@ -111,6 +117,12 @@ GS_Status *GS_CreateFile(GS_Folder *folder, char *name, GS_File **out) {
   GS_File *file = malloc(sizeof(GS_File));
   GS_NOT_NULL(file)
   GS_PANIC_ON_ERROR(strcpy_s(file->name, GS_MAX_NAME_SIZE, name))
+
+  if (folder) {
+    file->obj.center = folder->obj.center;
+  }
+  file->obj.radius = GS_FILE_RADIUS;
+  file->obj.color = GS_MakeSDLColorRGB(123, 32, 123);
   file->lines = 0;
   addFileToFolderUnchecked(folder, file);
   *out = file;

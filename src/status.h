@@ -43,6 +43,27 @@ typedef struct {
     }                                                                          \
   }
 
+#define GS_PANIC_NOT_OK(expr)                                                  \
+  {                                                                            \
+    GS_Status *M_status = expr;                                                \
+    if (M_status->code != GS_StatusCode_OK) {                                  \
+      fprintf(stderr, "Panic at %s:%d. %s", __FILE__, __LINE__,                \
+              M_status->message);                                              \
+      GS_DestroyStatus(M_status);                                              \
+      exit(-1);                                                                \
+    }                                                                          \
+  }
+
+#define GS_WARN_NOT_OK(expr)                                                   \
+  {                                                                            \
+    GS_Status *M_status = expr;                                                \
+    if (M_status->code != GS_StatusCode_OK) {                                  \
+      fprintf(stderr, "Warning generated at %s:%d. %s", __FILE__, __LINE__,    \
+              M_status->message);                                              \
+      GS_DestroyStatus(M_status);                                              \
+    }                                                                          \
+  }
+
 GS_Status *GS_Ok();
 
 GS_Status *GS_FileNotFound(char *name);

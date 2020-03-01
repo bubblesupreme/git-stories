@@ -19,18 +19,16 @@
 // SOFTWARE.
 
 #pragma once
+
+#include <SDL.h>
+#include <SDL2_gfx/SDL2_gfxPrimitives.h>
+
 #include "objects.h"
 #include "status.h"
-#include <SDL.h>
 
-typedef struct {
-  SDL_Window *window;
-  SDL_Renderer *renderer;
-  GS_Folder *root;
-} GS_WindowManager;
+static GS_Status *renderCircle(SDL_Renderer *renderer,
+                               const GS_CircularObject *obj);
 
-GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out);
+GS_Status *GS_RenderFile(SDL_Renderer *renderer, const GS_File *file);
 
-void GS_DestroyWindowManager(GS_WindowManager *wm);
-
-GS_Status *GS_UpdateWindowManager(GS_WindowManager *wm);
+GS_Status *GS_RenderFolder(SDL_Renderer *renderer, const GS_Folder *folder);

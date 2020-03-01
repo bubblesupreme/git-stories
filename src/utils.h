@@ -19,11 +19,14 @@
 // SOFTWARE.
 
 #pragma once
+#include <SDL.h>
 #include <errno.h>
 #include <stdio.h>
 
 #define GS_MAX_NAME_SIZE 128
 #define GS_INITIAL_FOLDER_CAPACITY 16
+#define GS_FOLDER_RADIUS 32
+#define GS_FILE_RADIUS 16
 
 #define GS_PANIC_ON_ERROR(expr)                                                \
   {                                                                            \
@@ -42,4 +45,10 @@
       exit(-1);                                                                \
     }                                                                          \
   }
- 
+
+SDL_Color GS_MakeSDLColorRGBA(uint8_t r, uint8_t g, uint8_t b,
+                                     uint8_t a);
+
+SDL_Color GS_MakeSDLColorRGB(uint8_t r, uint8_t g, uint8_t b);
+
+SDL_Color GS_MakeSDLColorGrey(uint8_t contrast);
