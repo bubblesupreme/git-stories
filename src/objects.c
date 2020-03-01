@@ -88,7 +88,10 @@ GS_Status *GS_CreateFolder(char *name, GS_Folder *parent, GS_Folder **out) {
   GS_PANIC_ON_ERROR(strcpy_s(result->name, GS_MAX_NAME_SIZE, name))
 
   if (parent) {
-    result->obj.center = parent->obj.center;
+    // we add some offset to make vector between that points
+    // to have non-zero length
+    result->obj.center.x = result->obj.center.x + rand() % 50 - 25;
+    result->obj.center.y = result->obj.center.y + rand() % 50 - 25;
   }
   result->obj.radius = GS_FOLDER_RADIUS;
   result->obj.color = GS_MakeSDLColorRGB(32, 234, 123);
@@ -119,7 +122,10 @@ GS_Status *GS_CreateFile(GS_Folder *folder, char *name, GS_File **out) {
   GS_PANIC_ON_ERROR(strcpy_s(file->name, GS_MAX_NAME_SIZE, name))
 
   if (folder) {
-    file->obj.center = folder->obj.center;
+    // we add some offset to make vector between that points
+    // to have non-zero length
+    file->obj.center.x = folder->obj.center.x + rand() % 50 - 25;
+    file->obj.center.y = folder->obj.center.y + rand() % 50 - 25;
   }
   file->obj.radius = GS_FILE_RADIUS;
   file->obj.color = GS_MakeSDLColorRGB(123, 32, 123);

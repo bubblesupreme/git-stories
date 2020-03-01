@@ -15,7 +15,7 @@ add_executable(git_stories
         src/window_manager.c
         src/status.c
         src/render.c
-        src/utils.c)
+        src/utils.c src/phisics.c src/phisics.h)
 IF (WIN32)
     target_link_libraries(git_stories mingw32 SDL2main SDL2 SDL2_gfx)
 else ()

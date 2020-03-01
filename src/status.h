@@ -43,6 +43,15 @@ typedef struct {
     }                                                                          \
   }
 
+#define GS_DESTROY_AND_RETURN_NOT_OK(expr, destruction_expr)                   \
+  {                                                                            \
+    GS_Status *M_status = expr;                                                \
+    if (M_status->code != GS_StatusCode_OK) {                                  \
+      destruction_expr;                                                        \
+      return M_status;                                                         \
+    }                                                                          \
+  }
+
 #define GS_PANIC_NOT_OK(expr)                                                  \
   {                                                                            \
     GS_Status *M_status = expr;                                                \

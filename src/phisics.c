@@ -18,32 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "objects.h"
-#include "status.h"
-#include "window_manager.h"
+#include "phisics.h"
+GS_Status *GS_CreateBalancer(GS_Balancer **out) {
+  GS_Balancer *balancer = malloc(sizeof(GS_Balancer));
+  GS_NOT_NULL(balancer)
+  balancer->objects_count = 0;
+  balancer->objects_capacity = GS_INITIAL_BALANCER_CAPACITY;
+  balancer->objects =
+      malloc(sizeof(GS_CircularObject *) * balancer->objects_capacity);
+  GS_NOT_NULL(balancer->objects)
+  balancer->directions = malloc(sizeof(GS_Vec2) * balancer->objects_capacity);
+  GS_NOT_NULL(balancer->directions)
+  *out = balancer;
+  return GS_Ok();
+}
 
-static GS_Status *generate_
+void GS_ClearBalancer(GS_Balancer *balancer) { balancer->objects_count = 0; }
 
-int main(int argc, char *argv[]) {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-    SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
-    return 1;
-  }
-  GS_WindowManager *window_manager;
-  GS_PANIC_NOT_OK(GS_CreateWindowManager(1920, 1080, &window_manager))
-
-  bool working = true;
-  while (working) {
-    SDL_Event event;
-    if (SDL_PollEvent(&event)) {
-      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
-        working = false;
-      }
-    }
-    GS_WARN_NOT_OK(GS_UpdateWindowManager(window_manager))
-  }
-
-  GS_DestroyWindowManager(window_manager);
-  SDL_Quit();
-  return 0;
+void GS_DestroyBalancer(GS_Balancer *balancer) {
+  free(balancer->objects);
+  free(balancer->directions);
+  free(balancer);
 }

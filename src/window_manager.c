@@ -25,9 +25,13 @@
 GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out) {
   GS_Folder *root;
   GS_RETURN_NOT_OK(GS_CreateFolder("root", NULL, &root))
+  GS_Balancer *balancer;
+  GS_DESTROY_AND_RETURN_NOT_OK(GS_CreateBalancer(&balancer),
+                               GS_DestroyFolder(root))
   GS_WindowManager *wm = malloc(sizeof(GS_WindowManager));
   GS_NOT_NULL(wm);
   wm->root = root;
+  wm->balancer = balancer;
   root->obj.center.x = w / 2;
   root->obj.center.y = h / 2;
   wm->window =
@@ -43,13 +47,14 @@ void GS_DestroyWindowManager(GS_WindowManager *wm) {
   SDL_DestroyRenderer(wm->renderer);
   SDL_DestroyWindow(wm->window);
   GS_DestroyFolder(wm->root);
+  GS_DestroyBalancer(wm->balancer);
   free(wm);
 }
 
 GS_Status *GS_UpdateWindowManager(GS_WindowManager *wm) {
   SDL_SetRenderDrawColor(wm->renderer, 255, 255, 255, 255);
   SDL_RenderClear(wm->renderer);
-
+  GS_ClearBalancer(wm->balancer);
   // TODO: Adjust coordinates
 
   GS_RETURN_NOT_OK(GS_RenderFolder(wm->renderer, wm->root))

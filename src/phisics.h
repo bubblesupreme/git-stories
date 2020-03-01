@@ -18,32 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#pragma once
+
 #include "objects.h"
 #include "status.h"
-#include "window_manager.h"
+#include "utils.h"
 
-static GS_Status *generate_
+#define GS_INITIAL_BALANCER_CAPACITY 1024
 
-int main(int argc, char *argv[]) {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-    SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
-    return 1;
-  }
-  GS_WindowManager *window_manager;
-  GS_PANIC_NOT_OK(GS_CreateWindowManager(1920, 1080, &window_manager))
+typedef struct {
+  double x;
+  double y;
+} GS_Vec2;
 
-  bool working = true;
-  while (working) {
-    SDL_Event event;
-    if (SDL_PollEvent(&event)) {
-      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
-        working = false;
-      }
-    }
-    GS_WARN_NOT_OK(GS_UpdateWindowManager(window_manager))
-  }
+typedef struct {
+  GS_CircularObject **objects;
+  GS_Vec2 *directions;
+  size_t objects_count;
+  size_t objects_capacity;
+} GS_Balancer;
 
-  GS_DestroyWindowManager(window_manager);
-  SDL_Quit();
-  return 0;
-}
+GS_Status *GS_CreateBalancer(GS_Balancer **out);
+
+void GS_ClearBalancer(GS_Balancer *balancer);
+
+void GS_DestroyBalancer(GS_Balancer *balancer);

@@ -20,13 +20,14 @@
 
 #pragma once
 #include "objects.h"
+#include "phisics.h"
 #include "status.h"
 #include <SDL.h>
-
 typedef struct {
   SDL_Window *window;
   SDL_Renderer *renderer;
   GS_Folder *root;
+  GS_Balancer *balancer;
 } GS_WindowManager;
 
 GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out);
