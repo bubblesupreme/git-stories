@@ -22,7 +22,6 @@
 #include "status.h"
 #include "window_manager.h"
 
-static GS_Status *generate_
 
 int main(int argc, char *argv[]) {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {

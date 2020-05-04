@@ -30,7 +30,7 @@
 
 #define GS_PANIC_ON_ERROR(expr)                                                \
   {                                                                            \
-    errno_t M_err;                                                             \
+    int M_err;                                                             \
     if ((M_err = expr) != 0) {                                                 \
       fprintf(stderr, "Panic at %s:%d. Message: %s", __FILE__, __LINE__,       \
               strerror(M_err));                                                \
