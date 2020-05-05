@@ -23,10 +23,12 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 
 	"../linter"
+	"google.golang.org/protobuf/proto"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -49,18 +51,6 @@ type Linter struct {
 type Config struct {
 	User    User     `json:"user"`
 	Linters []Linter `json:"linters"`
-}
-
-type OutCommitInfo struct {
-	Hash         string
-	NewFiles     []string
-	DeletedFiles []string
-	ChangedFiles []string
-	Errors       int
-}
-
-type OutConfig struct {
-	Commits []OutCommitInfo
 }
 
 func ParseJsonConfig(filePath string) (*Config, error) {
@@ -113,21 +103,31 @@ func (config *Config) GetLinters() ([]linter.ILinter, error) {
 }
 
 func (config *OutConfig) WriteResults(filePath string) error {
-	resJson, err := json.Marshal(config)
+	file, err := os.Create(filePath)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"config": config,
-		}).Error("Failed to encode struct OutConfig to JSON.")
+			"filePath": filePath,
+		}).Error("Failed to create file.")
 		return err
 	}
 
-	err = ioutil.WriteFile(filePath, resJson, 0777)
+	data, err := proto.Marshal(config)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"resJson": resJson,
-		}).Error("Failed to write to file.")
+			"config": config,
+		}).Error("Failed to encode struct OutConfig to bytes.")
 		return err
 	}
+
+	_, err = file.Write(data)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"file": file,
+		}).Error("Failed to write bytes to file.")
+		return err
+	}
+
+	fmt.Println(data)
 
 	return nil
 }

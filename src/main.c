@@ -21,6 +21,7 @@
 #include "objects.h"
 #include "status.h"
 #include "window_manager.h"
+#include "config.pb-c.h"
 
 static void initFolder(GS_Folder *root) {
   char name[] = "A";
@@ -36,6 +37,29 @@ static void initFolder(GS_Folder *root) {
 }
 
 int main(int argc, char *argv[]) {
+
+  FILE *fp;
+
+	fp = fopen("/home/svetlana/git/go-github/Temp/output.gs", "r+");
+
+    fseek(fp, 0, SEEK_END);
+    size_t sz = ftell(fp);
+    fseek(fp, 0L, SEEK_SET);
+
+	uint8_t *data = malloc(sz);
+
+	fread(data, sizeof(uint8_t), sz, fp);
+
+    fclose (fp);
+
+    Config__OutConfig *config = config__out_config__unpack(NULL, sz, data);
+
+    for(int i=0; i<config->n_commits; i++) {
+        for(int j=0; j<config->commits[i]->n_newfiles; j++) {
+            printf("%s\n", config->commits[i]->newfiles[j]);
+        }
+    }
+
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
     SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
     return 1;

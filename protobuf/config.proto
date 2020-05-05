@@ -1,0 +1,15 @@
+syntax="proto3";
+
+package config;
+
+message OutCommitInfo {
+  string hash = 1;
+  repeated string newFiles = 2;
+  repeated string deletedFiles = 3;
+  repeated string changedFiles = 4;
+  int32 errors = 5;
+}
+
+message OutConfig {
+  repeated OutCommitInfo commits = 1;
+}

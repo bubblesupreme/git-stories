@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+//go:generate protoc --go_out=$PWD/config --proto_path=$PWD/../protobuf/ config.proto
 package main
 
 import (
@@ -34,7 +35,7 @@ func main() {
 		return
 	}
 
-	err = worker.Work("./parameters.json")
+	err = worker.Work("parameters.json")
 	if err != nil {
 		fmt.Println(err)
 		return

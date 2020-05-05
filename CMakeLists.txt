@@ -9,15 +9,32 @@ include_directories(${SDL2_INCLUDE_DIRS} lib)
 
 add_subdirectory(lib)
 
+set(PROTOBUF_INPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/protobuf)
+set(PROTOBUF_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generated)
+
+set(PROTOBUF_ARGUMENTS --proto_path=\"${PROTOBUF_INPUT_DIRECTORY}\" --c_out=\"${PROTOBUF_OUTPUT_DIRECTORY}\" \"config.proto\")
+
+add_custom_target(gen-protobuf)
+add_custom_command(TARGET gen-protobuf
+        PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${PROTOBUF_OUTPUT_DIRECTORY}
+        COMMAND protoc ${PROTOBUF_ARGUMENTS})
+
+include_directories(${PROTOBUF_OUTPUT_DIRECTORY})
+
+set(PROTOBUF_GENERATED "${PROTOBUF_OUTPUT_DIRECTORY}/config.pb-c.c")
+set_source_files_properties(${PROTOBUF_GENERATED} PROPERTIES GENERATED TRUE)
+
 add_executable(git_stories
-        src/sdl_drawing/main.c
-        src/sdl_drawing/objects.c
-        src/sdl_drawing/window_manager.c
-        src/sdl_drawing/status.c
-        src/sdl_drawing/render.c
-        src/sdl_drawing/utils.c src/sdl_drawing/phisics.c src/sdl_drawing/phisics.h)
-IF (WIN32)
-    target_link_libraries(git_stories mingw32 SDL2main SDL2 SDL2_gfx)
-else ()
-    target_link_libraries(git_stories SDL2main SDL2 SDL2_gfx)
-ENDIF (WIN32)
+        src/main.c
+        src/objects.c
+        src/window_manager.c
+        src/status.c
+        src/render.c
+        src/utils.c
+        src/phisics.c
+        src/phisics.h
+        ${PROTOBUF_GENERATED})
+
+target_link_libraries(git_stories SDL2main SDL2 SDL2_gfx m protobuf-c)
+add_dependencies(git_stories gen-protobuf)

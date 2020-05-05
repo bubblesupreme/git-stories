@@ -33,7 +33,7 @@ import (
 )
 
 const (
-	workingFolderName = "Temp"
+	workingFolderName = "../Temp"
 )
 
 func getCloneRepositoryString(url string) string {
@@ -104,7 +104,7 @@ func (worker *Worker) Work(configPath string) error {
 	fmt.Println(commits)
 
 	outConfig := config.OutConfig{
-		Commits: make([]config.OutCommitInfo, 0, len(commits)),
+		Commits: make([]*config.OutCommitInfo, 0, len(commits)),
 	}
 
 	var commonRes int
@@ -153,16 +153,16 @@ func (worker *Worker) Work(configPath string) error {
 			}).Error("Failed to get commit information.")
 			return err
 		}
-		outConfig.Commits = append(outConfig.Commits, config.OutCommitInfo{
+		outConfig.Commits = append(outConfig.Commits, &config.OutCommitInfo{
 			Hash:         commits[i].Hash.String(),
 			NewFiles:     newFiles,
 			DeletedFiles: deletedFiles,
 			ChangedFiles: changedFiles,
-			Errors:       commonRes,
+			Errors:       int32(commonRes),
 		})
 	}
 
-	err = outConfig.WriteResults(filepath.Join(worker.workingFolderFullPath, "output.json"))
+	err = outConfig.WriteResults(filepath.Join(worker.workingFolderFullPath, "output.gs"))
 	if err != nil {
 		log.WithFields(log.Fields{
 			"outConfig": outConfig,
