@@ -21,6 +21,7 @@
 #pragma once
 #include <SDL.h>
 #include <errno.h>
+#include <stddef.h>
 #include <stdio.h>
 
 #define GS_MAX_NAME_SIZE 128
@@ -30,8 +31,8 @@
 
 #define GS_PANIC_ON_ERROR(expr)                                                \
   {                                                                            \
-    int M_err;                                                             \
-    if ((M_err = expr) != 0) {                                                 \
+    int M_err = expr;                                                          \
+    if (M_err != 0) {                                                          \
       fprintf(stderr, "Panic at %s:%d. Message: %s", __FILE__, __LINE__,       \
               strerror(M_err));                                                \
       exit(-1);                                                                \
@@ -46,8 +47,7 @@
     }                                                                          \
   }
 
-SDL_Color GS_MakeSDLColorRGBA(uint8_t r, uint8_t g, uint8_t b,
-                                     uint8_t a);
+SDL_Color GS_MakeSDLColorRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
 SDL_Color GS_MakeSDLColorRGB(uint8_t r, uint8_t g, uint8_t b);
 

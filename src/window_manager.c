@@ -55,7 +55,8 @@ GS_Status *GS_UpdateWindowManager(GS_WindowManager *wm) {
   SDL_SetRenderDrawColor(wm->renderer, 255, 255, 255, 255);
   SDL_RenderClear(wm->renderer);
   GS_ClearBalancer(wm->balancer);
-  // TODO: Adjust coordinates
+  GS_TraceObjects(wm->balancer, wm->root);
+  GS_Balance(wm->balancer);
 
   GS_RETURN_NOT_OK(GS_RenderFolder(wm->renderer, wm->root))
 

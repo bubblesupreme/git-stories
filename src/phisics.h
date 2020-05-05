@@ -19,23 +19,29 @@
 // SOFTWARE.
 
 #pragma once
+#include <stdbool.h>
 
 #include "objects.h"
 #include "status.h"
 #include "utils.h"
+#include "vector.h"
 
 #define GS_INITIAL_BALANCER_CAPACITY 1024
 
 typedef struct {
-  double x;
-  double y;
-} GS_Vec2;
+  size_t first;
+  size_t second;
+} GS_Pair;
 
 typedef struct {
   GS_CircularObject **objects;
-  GS_Vec2 *directions;
+  GS_Vec2 *forces;
+  bool *is_file;
   size_t objects_count;
   size_t objects_capacity;
+  GS_Pair *connections;
+  size_t connections_count;
+  size_t connections_capacity;
 } GS_Balancer;
 
 GS_Status *GS_CreateBalancer(GS_Balancer **out);
@@ -43,3 +49,7 @@ GS_Status *GS_CreateBalancer(GS_Balancer **out);
 void GS_ClearBalancer(GS_Balancer *balancer);
 
 void GS_DestroyBalancer(GS_Balancer *balancer);
+
+void GS_TraceObjects(GS_Balancer *balancer, GS_Folder *root);
+
+void GS_Balance(GS_Balancer *balancer);

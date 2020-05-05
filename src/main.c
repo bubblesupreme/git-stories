@@ -22,6 +22,18 @@
 #include "status.h"
 #include "window_manager.h"
 
+static void initFolder(GS_Folder *root) {
+  char name[] = "A";
+
+  for (int i = 0; i < 30; i++) {
+    GS_File *file;
+    GS_WARN_NOT_OK(GS_CreateFile(root, name, &file))
+    name[0] ++;
+  }
+
+  GS_Folder *f;
+  GS_WARN_NOT_OK(GS_CreateFolder("kek", root, &f))
+}
 
 int main(int argc, char *argv[]) {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
@@ -30,6 +42,7 @@ int main(int argc, char *argv[]) {
   }
   GS_WindowManager *window_manager;
   GS_PANIC_NOT_OK(GS_CreateWindowManager(1920, 1080, &window_manager))
+  initFolder(window_manager->root);
 
   bool working = true;
   while (working) {

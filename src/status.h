@@ -56,7 +56,7 @@ typedef struct {
   {                                                                            \
     GS_Status *M_status = expr;                                                \
     if (M_status->code != GS_StatusCode_OK) {                                  \
-      fprintf(stderr, "Panic at %s:%d. %s", __FILE__, __LINE__,                \
+      fprintf(stderr, "Panic at %s:%d. %s\n", __FILE__, __LINE__,                \
               M_status->message);                                              \
       GS_DestroyStatus(M_status);                                              \
       exit(-1);                                                                \
@@ -67,7 +67,7 @@ typedef struct {
   {                                                                            \
     GS_Status *M_status = expr;                                                \
     if (M_status->code != GS_StatusCode_OK) {                                  \
-      fprintf(stderr, "Warning generated at %s:%d. %s", __FILE__, __LINE__,    \
+      fprintf(stderr, "Warning generated at %s:%d. %s\n", __FILE__, __LINE__,    \
               M_status->message);                                              \
       GS_DestroyStatus(M_status);                                              \
     }                                                                          \

@@ -69,7 +69,8 @@ GS_Status *GS_FindFolder(GS_Folder *root, char *name, GS_Folder **result) {
   static void method(GS_Folder *parent, type *obj) {                           \
     if (parent->field##_count == parent->field##_capacity) {                   \
       parent->field##_capacity *= 2;                                           \
-      parent->field = realloc(parent->field, parent->field##_capacity);        \
+      parent->field =                                                          \
+          realloc(parent->field, sizeof(type *) * parent->field##_capacity);   \
       GS_NOT_NULL(parent->field);                                              \
     }                                                                          \
     parent->field[parent->field##_count++] = obj;                              \
@@ -85,7 +86,7 @@ GS_Status *GS_CreateFolder(char *name, GS_Folder *parent, GS_Folder **out) {
 
   GS_Folder *result = malloc(sizeof(GS_Folder));
   GS_NOT_NULL(result)
-  GS_PANIC_ON_ERROR(strcpy_s(result->name, GS_MAX_NAME_SIZE, name))
+  GS_NOT_NULL(strncpy(result->name, name, GS_MAX_NAME_SIZE))
 
   if (parent) {
     // we add some offset to make vector between that points
@@ -119,7 +120,7 @@ GS_Status *GS_CreateFile(GS_Folder *folder, char *name, GS_File **out) {
   }
   GS_File *file = malloc(sizeof(GS_File));
   GS_NOT_NULL(file)
-  GS_PANIC_ON_ERROR(strcpy_s(file->name, GS_MAX_NAME_SIZE, name))
+  GS_NOT_NULL(strncpy(file->name, name, GS_MAX_NAME_SIZE))
 
   if (folder) {
     // we add some offset to make vector between that points
