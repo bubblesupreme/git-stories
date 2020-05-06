@@ -4,6 +4,14 @@ project(git_stories C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
+set(GO_INPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/git_info)
+set(GO_OUTPUT_BINARY ${CMAKE_CURRENT_BINARY_DIR}/git_info)
+add_custom_target(go-build)
+add_custom_command(TARGET go-build
+        WORKING_DIRECTORY ${GO_INPUT_DIRECTORY}
+        COMMAND go generate
+        COMMAND go build -o ${GO_OUTPUT_BINARY})
+
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS} lib)
 
@@ -37,4 +45,4 @@ add_executable(git_stories
         ${PROTOBUF_GENERATED})
 
 target_link_libraries(git_stories SDL2main SDL2 SDL2_gfx m protobuf-c)
-add_dependencies(git_stories gen-protobuf)
+add_dependencies(git_stories gen-protobuf go-build)

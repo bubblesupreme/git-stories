@@ -21,20 +21,8 @@
 #include "objects.h"
 #include "status.h"
 #include "window_manager.h"
+#include "objects_manager.h"
 #include "config.pb-c.h"
-
-static void initFolder(GS_Folder *root) {
-  char name[] = "A";
-
-  for (int i = 0; i < 30; i++) {
-    GS_File *file;
-    GS_WARN_NOT_OK(GS_CreateFile(root, name, &file))
-    name[0] ++;
-  }
-
-  GS_Folder *f;
-  GS_WARN_NOT_OK(GS_CreateFolder("kek", root, &f))
-}
 
 int main(int argc, char *argv[]) {
 
@@ -66,7 +54,9 @@ int main(int argc, char *argv[]) {
   }
   GS_WindowManager *window_manager;
   GS_PANIC_NOT_OK(GS_CreateWindowManager(1920, 1080, &window_manager))
-  initFolder(window_manager->root);
+  GS_ObjectsManager *object_manager;
+  GS_PANIC_NOT_OK(GS_CreateObjectsManager(window_manager->root, &object_manager))
+  GS_WARN_NOT_OK(GS_UpdateObjectsManager(object_manager, config->commits[0]))
 
   bool working = true;
   while (working) {
@@ -80,6 +70,7 @@ int main(int argc, char *argv[]) {
   }
 
   GS_DestroyWindowManager(window_manager);
+  GS_DestroyObjectsManager(object_manager);
   SDL_Quit();
   return 0;
 }
