@@ -22,7 +22,9 @@
 #include "objects.h"
 #include "phisics.h"
 #include "status.h"
+#include "config.pb-c.h"
 #include <SDL.h>
+
 typedef struct {
   SDL_Window *window;
   SDL_Renderer *renderer;
@@ -35,3 +37,5 @@ GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out);
 void GS_DestroyWindowManager(GS_WindowManager *wm);
 
 GS_Status *GS_UpdateWindowManager(GS_WindowManager *wm);
+
+GS_Status *GS_UpdateObjects(GS_WindowManager *wm, Config__CommitInfo *commit);

@@ -52,3 +52,6 @@ SDL_Color GS_MakeSDLColorRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 SDL_Color GS_MakeSDLColorRGB(uint8_t r, uint8_t g, uint8_t b);
 
 SDL_Color GS_MakeSDLColorGrey(uint8_t contrast);
+
+typedef struct GS_Status GS_Status;  
+GS_Status* GS_CheckArgc(int argc);

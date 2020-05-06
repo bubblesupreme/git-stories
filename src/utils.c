@@ -17,7 +17,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 #include "utils.h"
+#include "status.h"
+
 
 SDL_Color GS_MakeSDLColorRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
   SDL_Color result;
@@ -27,9 +30,19 @@ SDL_Color GS_MakeSDLColorRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
   result.a = a;
   return result;
 }
+
 SDL_Color GS_MakeSDLColorRGB(uint8_t r, uint8_t g, uint8_t b) {
   return GS_MakeSDLColorRGBA(r, g, b, 255);
 }
+
 SDL_Color GS_MakeSDLColorGrey(uint8_t contrast) {
   return GS_MakeSDLColorRGB(contrast, contrast, contrast);
+}
+
+GS_Status* GS_CheckArgc(int argc){
+  int correctArgc = 2;
+  if (argc != correctArgc) {
+    return GS_IncorrectArgc(argc, correctArgc);
+  }
+  return GS_Ok();
 }

@@ -22,7 +22,6 @@ package gitinfo
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -178,7 +177,6 @@ func (gitUser *gitUser) GetCommitInfo(commit *object.Commit) ([]string, []string
 	deletedFiles := make([]string, 0, 20)
 	changedFiles := make([]string, 0, 20)
 
-	fmt.Println(len(commit.ParentHashes))
 	parent, err := commit.Parent(0)
 	if err == object.ErrParentNotFound {
 		log.WithFields(log.Fields{
@@ -212,17 +210,13 @@ func (gitUser *gitUser) GetCommitInfo(commit *object.Commit) ([]string, []string
 	for _, filePatches := range patch.FilePatches() {
 		from, to := filePatches.Files()
 		if from == nil {
-			fmt.Println("New File is created")
 			newFiles = append(newFiles, to.Path())
 		} else if to == nil {
-			fmt.Println("File is deleted")
 			deletedFiles = append(deletedFiles, from.Path())
 		} else if from.Path() != to.Path() {
-			fmt.Println("File is renamed")
 			newFiles = append(newFiles, to.Path())
 			deletedFiles = append(deletedFiles, from.Path())
 		} else {
-			fmt.Println("File is changed")
 			changedFiles = append(changedFiles, from.Path())
 		}
 	}

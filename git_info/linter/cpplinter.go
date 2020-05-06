@@ -23,7 +23,6 @@ package linter
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"strconv"
 
 	log "github.com/sirupsen/logrus"
@@ -64,7 +63,6 @@ func (cppLint *CPPLinter) ParseOutput(output []byte, err error) (int, error) {
 		}).Error("Failed to find result template.")
 		return -1, errors.New("output parsing failed")
 	}
-	fmt.Println(string(output[ind:]))
 	strRes := string(output[ind+len(cppLint.baseLinter.resultTemplate) : len(output)-1])
 	res, err := strconv.Atoi(strRes)
 	if err != nil {

@@ -25,9 +25,10 @@ typedef enum {
   GS_StatusCode_OK = 0,
   GS_StatusCode_NotFound = 1,
   GS_StatusCode_AlreadyExists = 2,
+  GS_StatusCode_IncorrectArgc = 3,
 } GS_StatusCode;
 
-typedef struct {
+typedef struct GS_Status{
   GS_StatusCode code;
   char *message;
 } GS_Status;
@@ -56,7 +57,7 @@ typedef struct {
   {                                                                            \
     GS_Status *M_status = expr;                                                \
     if (M_status->code != GS_StatusCode_OK) {                                  \
-      fprintf(stderr, "Panic at %s:%d. %s\n", __FILE__, __LINE__,                \
+      fprintf(stderr, "Panic at %s:%d. %s\n", __FILE__, __LINE__,              \
               M_status->message);                                              \
       GS_DestroyStatus(M_status);                                              \
       exit(-1);                                                                \
@@ -67,7 +68,7 @@ typedef struct {
   {                                                                            \
     GS_Status *M_status = expr;                                                \
     if (M_status->code != GS_StatusCode_OK) {                                  \
-      fprintf(stderr, "Warning generated at %s:%d. %s\n", __FILE__, __LINE__,    \
+      fprintf(stderr, "Warning generated at %s:%d. %s\n", __FILE__, __LINE__,  \
               M_status->message);                                              \
       GS_DestroyStatus(M_status);                                              \
     }                                                                          \
@@ -80,5 +81,7 @@ GS_Status *GS_FileNotFound(char *name);
 GS_Status *GS_FolderNotFound(char *name);
 
 GS_Status *GS_ObjectAlreadyExists(char *name);
+
+GS_Status *GS_IncorrectArgc(int received, int correct);
 
 void GS_DestroyStatus(GS_Status *status);

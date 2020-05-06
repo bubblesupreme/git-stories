@@ -21,7 +21,6 @@
 package worker
 
 import (
-	"fmt"
 	"path/filepath"
 
 	"../config"
@@ -33,7 +32,7 @@ import (
 )
 
 const (
-	workingFolderName = "../Temp"
+	workingFolderName = "Temp"
 )
 
 func getCloneRepositoryString(url string) string {
@@ -58,22 +57,13 @@ func CreateWorker() (*Worker, error) {
 	}, nil
 }
 
-func (worker *Worker) Work(configPath string) error {
-
-	err := utils.CreateFolder(worker.workingFolderFullPath, true)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"workingFolderFullPath": worker.workingFolderFullPath,
-		}).Error("Failed to create folder.")
-		return err
-	}
-
+func (worker *Worker) createResultConfig(configPath string) (string, error) {
 	userConfig, err := config.ParseJsonConfig(configPath)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"configPath": configPath,
 		}).Error("Failed to parse config.")
-		return err
+		return "", err
 	}
 	user := userConfig.GetUser()
 	linters, err := userConfig.GetLinters()
@@ -82,7 +72,7 @@ func (worker *Worker) Work(configPath string) error {
 			"linter": userConfig.Linters,
 		}).Error("Failed to get linter.")
 
-		return err
+		return "", err
 	}
 	gitUser := gitinfo.CreategitUser(user)
 	url := gitUser.GetRepositoryHTTPSURL()
@@ -93,15 +83,15 @@ func (worker *Worker) Work(configPath string) error {
 			"url": url,
 		}).Error("Failed to clone repository.")
 
-		return err
+		return "", err
 	}
 
 	commits, err := gitUser.GetCommits()
 	if err != nil {
 		log.Error("Failed to get commits.")
-		return err
+		return "", err
 	}
-	fmt.Println(commits)
+	// fmt.Println(commits)
 
 	outConfig := config.OutConfig{
 		Commits: make([]*config.CommitInfo, 0, len(commits)),
@@ -115,7 +105,7 @@ func (worker *Worker) Work(configPath string) error {
 			log.WithFields(log.Fields{
 				"commit": commits[i],
 			}).Error("Failed to checkout.")
-			return err
+			return "", err
 		}
 
 		for _, lint := range linters {
@@ -129,7 +119,7 @@ func (worker *Worker) Work(configPath string) error {
 				log.WithFields(log.Fields{
 					"output": string(output),
 				}).Error("Failed to parse output.")
-				return err
+				return "", err
 			}
 
 			var res int
@@ -139,19 +129,19 @@ func (worker *Worker) Work(configPath string) error {
 				res, err = lint.CalculateResult(numErrors)
 				if err != nil {
 					log.Error("Failed to calculate result.")
-					return err
+					return "", err
 				}
 			}
-			commonRes = res
+			commonRes += res
 		}
 
-		fmt.Println(commonRes)
+		// fmt.Println(commonRes)
 		newFiles, deletedFiles, changedFiles, err := gitUser.GetCommitInfo(commits[i])
 		if err != nil {
 			log.WithFields(log.Fields{
 				"commit": commits[i],
 			}).Error("Failed to get commit information.")
-			return err
+			return "", err
 		}
 		outConfig.Commits = append(outConfig.Commits, &config.CommitInfo{
 			Hash:         commits[i].Hash.String(),
@@ -162,20 +152,66 @@ func (worker *Worker) Work(configPath string) error {
 		})
 	}
 
-	err = outConfig.WriteResults(filepath.Join(worker.workingFolderFullPath, "output.gs"))
+	resultFile := filepath.Join(worker.workingFolderFullPath, "output.gs")
+	err = outConfig.WriteResults(resultFile)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"outConfig": outConfig,
 		}).Error("Failed to write results.")
+		return "", err
+	}
+
+	return resultFile, nil
+}
+
+func (worker *Worker) Work(configPath string) error {
+
+	err := utils.CreateFolder(worker.workingFolderFullPath, true)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"workingFolderFullPath": worker.workingFolderFullPath,
+		}).Error("Failed to create folder.")
 		return err
 	}
 
-	// err = utils.RemoveFolder(worker.workingFolderFullPath, true)
-	// if err != nil {
-	// 	log.WithFields(log.Fields{
-	// 		"workingFolderFullPath": worker.workingFolderFullPath,
-	// 	}).Error("Failed to remove folder.")
-	// 	return err
-	// }
+	resultFile, err := worker.createResultConfig(configPath)
+	if err != nil {
+		log.Error("Failed to create result config.")
+		return err
+	}
+
+	command := []string{"./gs_rendering", resultFile}
+	output, err := utils.RunCommand(command, "")
+	if err != nil {
+		log.WithFields(log.Fields{
+			"command": command,
+			"output":  string(output),
+		}).Error("Failed to run command.")
+		return err
+	}
+
+	err = utils.RemoveFolder(worker.workingFolderFullPath, true)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"workingFolderFullPath": worker.workingFolderFullPath,
+		}).Error("Failed to remove folder.")
+		return err
+	}
+	return nil
+}
+
+func (worker *Worker) ErrorCleanup() error {
+	if worker.workingFolderFullPath != "" {
+		isExists, _ := utils.IsPathExists(worker.workingFolderFullPath)
+		if isExists {
+			err := utils.RemoveFolder(worker.workingFolderFullPath, true)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"workingFolderFullPath": worker.workingFolderFullPath,
+				}).Error("Failed to remove folder.")
+				return err
+			}
+		}
+	}
 	return nil
 }

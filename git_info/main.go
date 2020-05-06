@@ -35,9 +35,14 @@ func main() {
 		return
 	}
 
-	err = worker.Work("parameters.json")
+	err = worker.Work("git-stories/parameters.json")
 	if err != nil {
 		fmt.Println(err)
+		err = worker.ErrorCleanup()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 		return
 	}
 }

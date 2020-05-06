@@ -1,0 +1,11 @@
+{
+    "user": {
+      "github_token": "0000000000000000000000000000000000000",
+      "owner": "bubblesupreme",
+      "repository": "git-stories"
+    },
+    "linters": [{
+      "name": "cpplint",
+      "parameters": ["--recursive"]
+    }]
+  }

@@ -64,3 +64,63 @@ GS_Status *GS_UpdateWindowManager(GS_WindowManager *wm) {
 
   return GS_Ok();
 }
+
+GS_Status *GS_UpdateObjects(GS_WindowManager *wm, Config__CommitInfo *commit) {
+  char *delim = "/";
+  GS_Folder *parent = wm->root;
+
+  for (int i = 0; i < commit->n_newfiles; i++) {
+    char *ptr = strtok(commit->newfiles[i], delim);
+    char *next;
+
+    while(1)
+    {
+      next = strtok(NULL, delim);
+      if(next != NULL) {
+        GS_Folder *f;
+        if(!GS_NameExists(parent, ptr)) {
+          GS_WARN_NOT_OK(GS_CreateFolder(ptr, parent, &f))
+        }
+        else {
+          GS_WARN_NOT_OK(GS_FindFolder(parent, ptr, &f))
+        }
+        if (f) {
+          parent = f;
+        }
+        ptr = next;
+      }
+      else {
+        GS_File *file;
+        GS_WARN_NOT_OK(GS_CreateFile(parent, ptr, &file))
+        parent = wm->root;
+        break;
+      }
+    }
+  }
+
+  for (int i = 0; i < commit->n_deletedfiles; i++) {
+    char *ptr = strtok(commit->deletedfiles[i], delim);
+    char *next;
+
+    while(1)
+    {
+      printf("'%s'\n", ptr);
+      next = strtok(NULL, delim);
+      if(next != NULL) {
+        GS_Folder *f;
+        GS_WARN_NOT_OK(GS_FindFolder(parent, ptr, &f))
+        if (f) {
+          parent = f;
+        }
+        ptr = next;
+      }
+      else {
+        GS_File *file;
+        GS_WARN_NOT_OK(GS_RemoveFile(parent, ptr))
+        parent = wm->root;
+        break;
+      }
+    }
+  }
+  return GS_Ok();
+}

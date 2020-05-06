@@ -23,7 +23,6 @@ package config
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -127,7 +126,7 @@ func (config *OutConfig) WriteResults(filePath string) error {
 		return err
 	}
 
-	fmt.Println(data)
+	// fmt.Println(data)
 
 	return nil
 }

@@ -18,35 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "objects.h"
 #include "status.h"
 #include "window_manager.h"
-#include "objects_manager.h"
+#include "utils.h"
 #include "config.pb-c.h"
+#include "time.h"
 
 int main(int argc, char *argv[]) {
 
+  GS_PANIC_NOT_OK(GS_CheckArgc(argc));
+
   FILE *fp;
+	fp = fopen(argv[1], "r+");
 
-	fp = fopen("/home/svetlana/git/go-github/Temp/output.gs", "r+");
-
-    fseek(fp, 0, SEEK_END);
-    size_t sz = ftell(fp);
-    fseek(fp, 0L, SEEK_SET);
+  fseek(fp, 0, SEEK_END);
+  size_t sz = ftell(fp);
+  fseek(fp, 0L, SEEK_SET);
 
 	uint8_t *data = malloc(sz);
-
 	fread(data, sizeof(uint8_t), sz, fp);
 
-    fclose (fp);
+  fclose (fp);
 
-    Config__OutConfig *config = config__out_config__unpack(NULL, sz, data);
-
-    for(int i=0; i<config->n_commits; i++) {
-        for(int j=0; j<config->commits[i]->n_newfiles; j++) {
-            printf("%s\n", config->commits[i]->newfiles[j]);
-        }
-    }
+  Config__OutConfig *config = config__out_config__unpack(NULL, sz, data);
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
     SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
@@ -54,10 +48,11 @@ int main(int argc, char *argv[]) {
   }
   GS_WindowManager *window_manager;
   GS_PANIC_NOT_OK(GS_CreateWindowManager(1920, 1080, &window_manager))
-  GS_ObjectsManager *object_manager;
-  GS_PANIC_NOT_OK(GS_CreateObjectsManager(window_manager->root, &object_manager))
-  GS_WARN_NOT_OK(GS_UpdateObjectsManager(object_manager, config->commits[0]))
 
+  time_t updateDelay = 5;
+  uint8_t iCommit = 0;
+  GS_WARN_NOT_OK(GS_UpdateObjects(window_manager, config->commits[iCommit]))
+  time_t lastUpdate = time(NULL);
   bool working = true;
   while (working) {
     SDL_Event event;
@@ -66,11 +61,14 @@ int main(int argc, char *argv[]) {
         working = false;
       }
     }
+    if ((time(NULL) - lastUpdate) >= updateDelay && iCommit < (config->n_commits - 1)) {
+      GS_WARN_NOT_OK(GS_UpdateObjects(window_manager, config->commits[++iCommit]))
+      lastUpdate = time(NULL);
+    }
     GS_WARN_NOT_OK(GS_UpdateWindowManager(window_manager))
   }
 
   GS_DestroyWindowManager(window_manager);
-  GS_DestroyObjectsManager(object_manager);
   SDL_Quit();
   return 0;
 }

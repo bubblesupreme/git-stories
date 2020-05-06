@@ -61,6 +61,14 @@ GS_Status *GS_ObjectAlreadyExists(char *name) {
   return status;
 }
 
+GS_Status *GS_IncorrectArgc(int received, int correct) {
+  GS_Status *status = allocStatus();
+  status->code = GS_StatusCode_IncorrectArgc;
+  snprintf(status->message, GS_STATUS_MAX_MESSAGE_SIZE,
+           "Takes %d arguments, but %d were received", correct, received);
+  return status;
+}
+
 void GS_DestroyStatus(GS_Status *status) {
   if (status == GS_StatusCode_OK)
     return;

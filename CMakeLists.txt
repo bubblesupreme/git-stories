@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
-project(git_stories C)
+project(gs_rendering C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 set(GO_INPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/git_info)
-set(GO_OUTPUT_BINARY ${CMAKE_CURRENT_BINARY_DIR}/git_info)
+set(GO_OUTPUT_BINARY ${CMAKE_CURRENT_BINARY_DIR}/git_stories)
 add_custom_target(go-build)
 add_custom_command(TARGET go-build
         WORKING_DIRECTORY ${GO_INPUT_DIRECTORY}
@@ -33,7 +33,7 @@ include_directories(${PROTOBUF_OUTPUT_DIRECTORY})
 set(PROTOBUF_GENERATED "${PROTOBUF_OUTPUT_DIRECTORY}/config.pb-c.c")
 set_source_files_properties(${PROTOBUF_GENERATED} PROPERTIES GENERATED TRUE)
 
-add_executable(git_stories
+add_executable(gs_rendering
         src/main.c
         src/objects.c
         src/window_manager.c
@@ -44,5 +44,5 @@ add_executable(git_stories
         src/phisics.h
         ${PROTOBUF_GENERATED})
 
-target_link_libraries(git_stories SDL2main SDL2 SDL2_gfx m protobuf-c)
-add_dependencies(git_stories gen-protobuf go-build)
+target_link_libraries(gs_rendering SDL2main SDL2 SDL2_gfx m protobuf-c)
+add_dependencies(gs_rendering gen-protobuf go-build)
