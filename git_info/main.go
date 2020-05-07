@@ -22,27 +22,40 @@
 package main
 
 import (
-	"fmt"
-
 	"./worker"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
-func main() {
-
-	worker, err := worker.CreateWorker()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	err = worker.Work("git-stories/parameters.json")
-	if err != nil {
-		fmt.Println(err)
-		err = worker.ErrorCleanup()
+var mainCmd = &cobra.Command{
+	Use:   "git_stories [parameters.json]",
+	Short: "git_stories is git history visualization tool.",
+	// Long: ``,
+	Args: cobra.ExactValidArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		log.Info("git_stories called")
+		params := args[0]
+		worker, err := worker.CreateWorker()
 		if err != nil {
-			fmt.Println(err)
+			log.Fatal(err)
 			return
 		}
-		return
+
+		err = worker.Work(params)
+		if err != nil {
+			log.Fatal(err)
+			err = worker.ErrorCleanup()
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
+			return
+		}
+	},
+}
+
+func main() {
+	if err := mainCmd.Execute(); err != nil {
+		log.Fatal(err)
 	}
 }
