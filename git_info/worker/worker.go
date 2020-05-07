@@ -23,10 +23,10 @@ package worker
 import (
 	"path/filepath"
 
-	"../config"
-	"../gitinfo"
-	"../linter"
-	"../utils"
+	"github.com/bubblesupreme/git-stories/git_info/config"
+	"github.com/bubblesupreme/git-stories/git_info/gitinfo"
+	"github.com/bubblesupreme/git-stories/git_info/linter"
+	"github.com/bubblesupreme/git-stories/git_info/utils"
 
 	log "github.com/sirupsen/logrus"
 )

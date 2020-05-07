@@ -2,4 +2,3 @@ cmake-build-debug
 .idea
 build
 .vscode
-git_info/config/config.pb.go

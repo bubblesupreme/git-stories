@@ -26,7 +26,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"../linter"
+	"github.com/bubblesupreme/git-stories/git_info/linter"
+
 	"google.golang.org/protobuf/proto"
 
 	log "github.com/sirupsen/logrus"

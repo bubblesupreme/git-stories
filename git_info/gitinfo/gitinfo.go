@@ -25,7 +25,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"../config"
+	"github.com/bubblesupreme/git-stories/git_info/config"
 
 	git "github.com/go-git/go-git"
 	"github.com/go-git/go-git/plumbing"

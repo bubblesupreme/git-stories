@@ -22,7 +22,8 @@
 package main
 
 import (
-	"./worker"
+	"github.com/bubblesupreme/git-stories/git_info/worker"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

@@ -23,7 +23,7 @@ package linter
 import (
 	"errors"
 
-	"../utils"
+	"github.com/bubblesupreme/git-stories/git_info/utils"
 )
 
 var noFilesError = errors.New("there are no files matching this linter")
