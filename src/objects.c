@@ -98,7 +98,9 @@ GS_Status *GS_CreateFolder(char *name, GS_Folder *parent, GS_Folder **out) {
     result->obj.center.y = result->obj.center.y + rand() % 50 - 25;
   }
   result->obj.radius = GS_FOLDER_RADIUS;
-  result->obj.color = GS_MakeSDLColorRGB(32, 234, 123);
+  result->obj.color = GS_MakeSDLColorRGB(0, 255, 0);
+  result->obj.mass = GS_FOLDER_MASS;
+  result->obj.speed = GS_VecMake(0.0, 0.0);
 
   result->files_count = 0;
   result->files_capacity = GS_INITIAL_FOLDER_CAPACITY;
@@ -134,8 +136,10 @@ GS_Status *GS_CreateFile(GS_Folder *folder, char *name, GS_File **out) {
   file->obj.center.x = res.x;
   file->obj.center.y = res.y;
   file->obj.radius = GS_FILE_RADIUS;
-  file->obj.color = GS_MakeSDLColorRGB(123, 32, 123);
+  file->obj.color = GS_MakeSDLColorRGB(0, 255, 0);
   file->lines = 0;
+  file->obj.mass = GS_FILE_MASS;
+  file->obj.speed = GS_VecMake(0.0, 0.0);
   addFileToFolderUnchecked(folder, file);
   *out = file;
   return GS_Ok();
@@ -167,7 +171,7 @@ GS_Status *GS_RemoveFile(GS_Folder *folder, char *filename) {
   return GS_Ok();
 }
 
-GS_Status *GS_SetObjectColor(GS_CircularObject *obj, SDL_Color color) {
+GS_Status *GS_SetObjectColor(GS_Object *obj, SDL_Color color) {
   obj->color = color;
   return GS_Ok();
 }

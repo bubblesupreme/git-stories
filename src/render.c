@@ -27,14 +27,14 @@
 #include "status.h"
 #include "vector.h"
 
-GS_Status *renderLine(SDL_Renderer *renderer, const GS_CircularObject *obj1,
-                      const GS_CircularObject *obj2) {
+GS_Status *renderLine(SDL_Renderer *renderer, const GS_Object *obj1,
+                      const GS_Object *obj2) {
   lineRGBA(renderer, obj1->center.x, obj1->center.y, obj2->center.x,
            obj2->center.y, 0, 0, 0, 255);
   return GS_Ok();
 }
 
-GS_Status *renderCircle(SDL_Renderer *renderer, const GS_CircularObject *obj) {
+GS_Status *renderCircle(SDL_Renderer *renderer, const GS_Object *obj) {
   filledCircleRGBA(renderer, obj->center.x, obj->center.y, obj->radius,
                    obj->color.r, obj->color.g, obj->color.b, obj->color.a);
   return GS_Ok();

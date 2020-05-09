@@ -34,7 +34,7 @@ typedef struct {
 } GS_Pair;
 
 typedef struct {
-  GS_CircularObject **objects;
+  GS_Object **objects;
   GS_Vec2 *forces;
   bool *is_file;
   size_t objects_count;

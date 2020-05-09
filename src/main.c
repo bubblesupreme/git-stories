@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
+#include <sys/time.h>
 
 #include "SDL.h"
 #include "SDL_error.h"
@@ -32,7 +32,6 @@
 #include "SDL_log.h"
 #include "config.pb-c.h"
 #include "status.h"
-#include "time.h"
 #include "utils.h"
 #include "window_manager.h"
 
@@ -67,27 +66,34 @@ int main(int argc, char *argv[]) {
   GS_WindowManager *window_manager;
   GS_PANIC_NOT_OK(GS_CreateWindowManager(1920, 1080, &window_manager))
 
-  time_t updateDelay = 5;
+  struct timeval lastUpdateObj, lastUpdateWM, curTime;
   uint8_t iCommit = 0;
   GS_WARN_NOT_OK(GS_UpdateObjects(window_manager, config->commits[iCommit]))
-  time_t lastUpdateObj = time(NULL);
   bool working = true;
+  gettimeofday(&lastUpdateObj, NULL);
+  gettimeofday(&lastUpdateWM, NULL);
   while (working) {
+    gettimeofday(&curTime, NULL);
     SDL_Event event;
     if (SDL_PollEvent(&event)) {
       if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
         working = false;
       }
     }
-    if ((time(NULL) - lastUpdateObj) >= updateDelay &&
+    if ((curTime.tv_sec - lastUpdateObj.tv_sec) >= GS_COMMITS_INTERVAL &&
         iCommit < (config->n_commits - 1)) {
       GS_WARN_NOT_OK(
           GS_UpdateObjects(window_manager, config->commits[++iCommit]))
-      lastUpdateObj = time(NULL);
+      lastUpdateObj = curTime;
     }
 
-    GS_WARN_NOT_OK(GS_UpdateColors(window_manager))
-    GS_WARN_NOT_OK(GS_UpdateWindowManager(window_manager))
+    if (((double)(curTime.tv_usec - lastUpdateWM.tv_usec)) / 1000 +
+            (curTime.tv_sec - lastUpdateWM.tv_sec) * 1000 >=
+        1000. / GS_TICS_PER_SECOND / GS_MICROTICKS_PER_TICK) {
+      lastUpdateWM = curTime;
+      GS_WARN_NOT_OK(GS_UpdateColors(window_manager))
+      GS_WARN_NOT_OK(GS_UpdateWindowManager(window_manager))
+    }
   }
   config__out_config__free_unpacked(config, NULL);
   GS_DestroyWindowManager(window_manager);

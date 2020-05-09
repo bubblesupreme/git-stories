@@ -29,6 +29,22 @@
 #define GS_INITIAL_FOLDER_CAPACITY 16
 #define GS_FOLDER_RADIUS 32
 #define GS_FILE_RADIUS 16
+#define GS_FOLDER_MASS 32.0
+#define GS_FILE_MASS 1.0
+#define GS_TICS_PER_SECOND 30
+// TODO: differentiate ticks and microtics
+// we don't need ticks to influence phisics speed as it now
+#define GS_MICROTICKS_PER_TICK 30
+#define GS_COMMITS_INTERVAL 7
+#define GS_SPEED_DAMPING 0.99
+
+#define GS_FOLDER_CHARGE 4000
+#define GS_FILE_CHARGE 120
+#define GS_FOLDER_FOLDER_TENSION 20
+#define GS_FOLDER_FILE_TENSION 20
+
+#define GS_FILE_FOLDER_SPRING_LENTH 64
+#define GS_FOLDER_FOLDER_SPRING_LENTH 256
 
 #define GS_PANIC_ON_ERROR(expr)                                                \
   {                                                                            \

@@ -30,17 +30,19 @@
 typedef struct {
   SDL_Color color;
   GS_Vec2 center;
+  double mass;
+  GS_Vec2 speed;
   uint32_t radius;
-} GS_CircularObject;
+} GS_Object;
 
 typedef struct {
-  GS_CircularObject obj;
+  GS_Object obj;
   char name[GS_MAX_NAME_SIZE];
   uint64_t lines;
 } GS_File;
 
 typedef struct GS_Folder_ {
-  GS_CircularObject obj;
+  GS_Object obj;
   char name[GS_MAX_NAME_SIZE];
 
   GS_File **files;
@@ -66,6 +68,6 @@ void GS_DestroyFolder(GS_Folder *folder);
 
 GS_Status *GS_RemoveFile(GS_Folder *folder, char *filename);
 
-GS_Status *GS_SetObjectColor(GS_CircularObject *obj, SDL_Color color);
+GS_Status *GS_SetObjectColor(GS_Object *obj, SDL_Color color);
 
 GS_Status *GS_SetGeneralColor(GS_Folder *folder, SDL_Color color);
