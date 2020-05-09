@@ -25,3 +25,10 @@ typedef struct {
   double y;
 } GS_Vec2;
 
+static GS_Vec2 vecMake(double x, double y) {
+  GS_Vec2 v;
+  v.x = x;
+  v.y = y;
+  return v;
+}
+

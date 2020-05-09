@@ -20,6 +20,7 @@
 
 #include "utils.h"
 #include "status.h"
+#include <math.h>
 
 
 SDL_Color GS_MakeSDLColorRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
@@ -45,4 +46,19 @@ GS_Status* GS_CheckArgc(int argc){
     return GS_IncorrectArgc(argc, correctArgc);
   }
   return GS_Ok();
+}
+
+void GS_RandomCirclePoint(GS_Vec2 *center, int radius, GS_Vec2 *res)
+{
+        //x*x + y*y = R*R
+        float x = rand() % radius;
+        if (rand() % 2) {
+          x = -x;
+        }
+        float y = sqrt(radius*radius - x*x);
+        if (rand() % 2) {
+          y = -y;
+        }
+        res->x = center->x + x;
+        res->y = center->y + y;
 }

@@ -24,8 +24,8 @@
 
 #define K_FoFi 1
 #define K_FoFo 1
-#define Q_Fi 1
-#define Q_Fo 10
+#define Q_Fi 5
+#define Q_Fo 20
 
 static void vecSum(GS_Vec2 *lhs, GS_Vec2 *rhs, GS_Vec2 *res) {
   res->x = lhs->x + rhs->x;
@@ -38,8 +38,8 @@ static void vecDif(GS_Vec2 *lhs, GS_Vec2 *rhs, GS_Vec2 *res) {
 }
 
 static void vecScalarMult(GS_Vec2 *vec, double scalar, GS_Vec2 *res) {
-  vec->x *= scalar;
-  vec->y *= scalar;
+  res->x = vec->x * scalar;
+  res->y = vec->y * scalar;
 }
 
 static void vecScalarDiv(GS_Vec2 *vec, double scalar, GS_Vec2 *res) {
@@ -53,13 +53,6 @@ static double vecLen(GS_Vec2 *vec) {
 static void vecNorm(GS_Vec2 *vec, GS_Vec2 *res) {
   double len = vecLen(vec);
   vecScalarDiv(vec, len, res);
-}
-
-static GS_Vec2 vecMake(double x, double y) {
-  GS_Vec2 v;
-  v.x = x;
-  v.y = y;
-  return v;
 }
 
 GS_Status *GS_CreateBalancer(GS_Balancer **out) {
@@ -83,7 +76,7 @@ GS_Status *GS_CreateBalancer(GS_Balancer **out) {
 }
 
 static double coulombForce(double q1, double q2, double r) {
-  return 8.99 * q1 / r;
+  return q2 * q1 / r;
 }
 
 static double gukeForce(double k, double dl) { return -k * dl; }
@@ -137,11 +130,11 @@ void GS_Balance(GS_Balancer *balancer) {
   for (int i = 0; i < balancer->objects_count; i++) {
     balancer->forces[i] = vecMake(0, 0);
     GS_Vec2 pos = balancer->objects[i]->center;
+    double q1 = balancer->is_file[i] ? Q_Fi : Q_Fo;
     for (int j = 0; j < balancer->objects_count; j++) {
       GS_Vec2 pos2 = balancer->objects[j]->center;
       GS_Vec2 res;
       vecDif(&pos, &pos2, &res);
-      double q1 = balancer->is_file[i] ? Q_Fi : Q_Fo;
       double q2 = balancer->is_file[j] ? Q_Fi : Q_Fo;
       double len = vecLen(&res);
       if (len == 0) {

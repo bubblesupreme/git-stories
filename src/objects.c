@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 #include "objects.h"
+#include "vector.h"
 #include "utils.h"
 #include <errno.h>
 #include <stdlib.h>
@@ -125,8 +126,12 @@ GS_Status *GS_CreateFile(GS_Folder *folder, char *name, GS_File **out) {
   if (folder) {
     // we add some offset to make vector between that points
     // to have non-zero length
-    file->obj.center.x = folder->obj.center.x + rand() % 50 - 25;
-    file->obj.center.y = folder->obj.center.y + rand() % 50 - 25;
+    GS_Vec2 res = vecMake(0.0, 0.0);
+    GS_Vec2 center = vecMake(folder->obj.center.x, folder->obj.center.y);
+    GS_RandomCirclePoint(&center, 10, &res);
+    file->obj.center.x = res.x;
+    file->obj.center.y = res.y;
+    // printf("%f - %f\n", file->obj.center.x, file->obj.center.y);
   }
   file->obj.radius = GS_FILE_RADIUS;
   file->obj.color = GS_MakeSDLColorRGB(123, 32, 123);

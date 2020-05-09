@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 #pragma once
+#include "vector.h"
 #include <SDL.h>
 #include <errno.h>
 #include <stddef.h>
@@ -55,3 +56,5 @@ SDL_Color GS_MakeSDLColorGrey(uint8_t contrast);
 
 typedef struct GS_Status GS_Status;  
 GS_Status* GS_CheckArgc(int argc);
+
+void GS_RandomCirclePoint(GS_Vec2 *center, int radius, GS_Vec2 *res);
