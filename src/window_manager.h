@@ -19,17 +19,21 @@
 // SOFTWARE.
 
 #pragma once
+#include "SDL_pixels.h"
+#include "SDL_render.h"
+#include "SDL_video.h"
+#include "config.pb-c.h"
 #include "objects.h"
 #include "phisics.h"
 #include "status.h"
-#include "config.pb-c.h"
-#include <SDL.h>
 
 typedef struct {
   SDL_Window *window;
   SDL_Renderer *renderer;
   GS_Folder *root;
   GS_Balancer *balancer;
+  SDL_Color currentColor;
+  SDL_Color targetColor;
 } GS_WindowManager;
 
 GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out);
@@ -37,5 +41,7 @@ GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out);
 void GS_DestroyWindowManager(GS_WindowManager *wm);
 
 GS_Status *GS_UpdateWindowManager(GS_WindowManager *wm);
+
+GS_Status *GS_UpdateColors(GS_WindowManager *wm);
 
 GS_Status *GS_UpdateObjects(GS_WindowManager *wm, Config__CommitInfo *commit);

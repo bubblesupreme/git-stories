@@ -39,6 +39,7 @@ func CreateCPPLinter(parameters []string) ILinter {
 			name:           "cpplint",
 			parameters:     parameters,
 			resultTemplate: []byte("Total errors found: "),
+			inadmissible:   900,
 		},
 	}
 }
@@ -75,7 +76,11 @@ func (cppLint *CPPLinter) ParseOutput(output []byte, err error) (int, error) {
 }
 
 func (cppLint *CPPLinter) CalculateResult(errors int) (int, error) {
-	return errors, nil
+	res := 100 * errors / cppLint.baseLinter.inadmissible
+	if res > 100 {
+		res = 100
+	}
+	return res, nil
 }
 
 func (cppLint *CPPLinter) CheckError(err error) error {

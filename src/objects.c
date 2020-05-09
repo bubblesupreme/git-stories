@@ -19,11 +19,13 @@
 // SOFTWARE.
 
 #include "objects.h"
-#include "vector.h"
-#include "utils.h"
-#include <errno.h>
+
 #include <stdlib.h>
 #include <string.h>
+
+#include "status.h"
+#include "utils.h"
+#include "vector.h"
 
 bool GS_NameExists(GS_Folder *root, char *name) {
 // We can not create folder with the same name as file, so we don't need
@@ -116,6 +118,7 @@ GS_Status *GS_CreateFolder(char *name, GS_Folder *parent, GS_Folder **out) {
 }
 
 GS_Status *GS_CreateFile(GS_Folder *folder, char *name, GS_File **out) {
+  GS_NOT_NULL(folder)
   if (GS_NameExists(folder, name)) {
     return GS_ObjectAlreadyExists(name);
   }
@@ -123,16 +126,13 @@ GS_Status *GS_CreateFile(GS_Folder *folder, char *name, GS_File **out) {
   GS_NOT_NULL(file)
   GS_NOT_NULL(strncpy(file->name, name, GS_MAX_NAME_SIZE))
 
-  if (folder) {
-    // we add some offset to make vector between that points
-    // to have non-zero length
-    GS_Vec2 res = vecMake(0.0, 0.0);
-    GS_Vec2 center = vecMake(folder->obj.center.x, folder->obj.center.y);
-    GS_RandomCirclePoint(&center, 10, &res);
-    file->obj.center.x = res.x;
-    file->obj.center.y = res.y;
-    // printf("%f - %f\n", file->obj.center.x, file->obj.center.y);
-  }
+  // we add some offset to make vector between that points
+  // to have non-zero length
+  GS_Vec2 res = GS_VecMake(0.0, 0.0);
+  GS_Vec2 center = GS_VecMake(folder->obj.center.x, folder->obj.center.y);
+  GS_RandomCirclePoint(&center, 10, &res);
+  file->obj.center.x = res.x;
+  file->obj.center.y = res.y;
   file->obj.radius = GS_FILE_RADIUS;
   file->obj.color = GS_MakeSDLColorRGB(123, 32, 123);
   file->lines = 0;
@@ -164,4 +164,21 @@ GS_Status *GS_RemoveFile(GS_Folder *folder, char *filename) {
   }
   folder->files_count--;
   destroyFile(file);
+  return GS_Ok();
+}
+
+GS_Status *GS_SetObjectColor(GS_CircularObject *obj, SDL_Color color) {
+  obj->color = color;
+  return GS_Ok();
+}
+
+GS_Status *GS_SetGeneralColor(GS_Folder *folder, SDL_Color color) {
+  for (size_t i = 0; i < folder->files_count; i++) {
+    GS_RETURN_NOT_OK(GS_SetObjectColor(&folder->files[i]->obj, color))
+  }
+  for (size_t i = 0; i < folder->folders_count; i++) {
+    GS_RETURN_NOT_OK(GS_SetGeneralColor(folder->folders[i], color))
+  }
+  GS_RETURN_NOT_OK(GS_SetObjectColor(&folder->obj, color));
+  return GS_Ok();
 }

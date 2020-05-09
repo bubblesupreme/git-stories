@@ -19,9 +19,12 @@
 // SOFTWARE.
 
 #pragma once
-#include "status.h"
-#include <SDL.h>
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include "SDL_pixels.h"
+#include "utils.h"
 #include "vector.h"
 
 typedef struct {
@@ -62,3 +65,7 @@ GS_Status *GS_CreateFile(GS_Folder *folder, char *name, GS_File **out);
 void GS_DestroyFolder(GS_Folder *folder);
 
 GS_Status *GS_RemoveFile(GS_Folder *folder, char *filename);
+
+GS_Status *GS_SetObjectColor(GS_CircularObject *obj, SDL_Color color);
+
+GS_Status *GS_SetGeneralColor(GS_Folder *folder, SDL_Color color);

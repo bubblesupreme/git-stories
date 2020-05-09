@@ -19,41 +19,16 @@
 // SOFTWARE.
 
 #include "phisics.h"
-#include <math.h>
+
 #include <stdbool.h>
+#include <stdlib.h>
+
+#include "utils.h"
 
 #define K_FoFi 1
 #define K_FoFo 1
 #define Q_Fi 5
 #define Q_Fo 20
-
-static void vecSum(GS_Vec2 *lhs, GS_Vec2 *rhs, GS_Vec2 *res) {
-  res->x = lhs->x + rhs->x;
-  res->y = lhs->y + rhs->y;
-}
-
-static void vecDif(GS_Vec2 *lhs, GS_Vec2 *rhs, GS_Vec2 *res) {
-  res->x = lhs->x - rhs->x;
-  res->y = lhs->y - rhs->y;
-}
-
-static void vecScalarMult(GS_Vec2 *vec, double scalar, GS_Vec2 *res) {
-  res->x = vec->x * scalar;
-  res->y = vec->y * scalar;
-}
-
-static void vecScalarDiv(GS_Vec2 *vec, double scalar, GS_Vec2 *res) {
-  vecScalarMult(vec, 1.0 / scalar, res);
-}
-
-static double vecLen(GS_Vec2 *vec) {
-  return sqrt(vec->x * vec->x + vec->y * vec->y);
-}
-
-static void vecNorm(GS_Vec2 *vec, GS_Vec2 *res) {
-  double len = vecLen(vec);
-  vecScalarDiv(vec, len, res);
-}
 
 GS_Status *GS_CreateBalancer(GS_Balancer **out) {
   GS_Balancer *balancer = malloc(sizeof(GS_Balancer));
@@ -128,22 +103,22 @@ void GS_TraceObjects(GS_Balancer *balancer, GS_Folder *root) {
 
 void GS_Balance(GS_Balancer *balancer) {
   for (int i = 0; i < balancer->objects_count; i++) {
-    balancer->forces[i] = vecMake(0, 0);
+    balancer->forces[i] = GS_VecMake(0, 0);
     GS_Vec2 pos = balancer->objects[i]->center;
     double q1 = balancer->is_file[i] ? Q_Fi : Q_Fo;
     for (int j = 0; j < balancer->objects_count; j++) {
       GS_Vec2 pos2 = balancer->objects[j]->center;
       GS_Vec2 res;
-      vecDif(&pos, &pos2, &res);
+      GS_VecDif(&pos, &pos2, &res);
       double q2 = balancer->is_file[j] ? Q_Fi : Q_Fo;
-      double len = vecLen(&res);
+      double len = GS_VecLen(&res);
       if (len == 0) {
         continue;
       }
       double force = coulombForce(q1, q2, len);
-      vecNorm(&res, &res);
-      vecScalarMult(&res, force / 10, &res);
-      vecSum(&balancer->forces[i], &res, &balancer->forces[i]);
+      GS_VecNorm(&res, &res);
+      GS_VecScalarMult(&res, force / 10, &res);
+      GS_VecSum(&balancer->forces[i], &res, &balancer->forces[i]);
     }
   }
 
@@ -155,20 +130,22 @@ void GS_Balance(GS_Balancer *balancer) {
     GS_Vec2 pos1 = balancer->objects[first]->center;
     GS_Vec2 pos2 = balancer->objects[second]->center;
     GS_Vec2 res;
-    vecDif(&pos1, &pos2, &res);
-    double len = vecLen(&res);
+    GS_VecDif(&pos1, &pos2, &res);
+    double len = GS_VecLen(&res);
     if (len == 0) {
       continue;
     }
-    double force = gukeForce(k, len - (balancer->objects[first]->radius + balancer->objects[second]->radius) * 4);
-    vecNorm(&res, &res);
-    vecScalarMult(&res, force / 10, &res);
+    double force = gukeForce(k, len - (balancer->objects[first]->radius +
+                                       balancer->objects[second]->radius) *
+                                          4);
+    GS_VecNorm(&res, &res);
+    GS_VecScalarMult(&res, force / 10, &res);
     if (balancer->is_file[first] || !balancer->is_file[second]) {
-      vecSum(&balancer->forces[first], &res, &balancer->forces[first]);
+      GS_VecSum(&balancer->forces[first], &res, &balancer->forces[first]);
     }
-    vecScalarMult(&res, -1, &res);
+    GS_VecScalarMult(&res, -1, &res);
     if (balancer->is_file[second] || !balancer->is_file[first]) {
-      vecSum(&balancer->forces[second], &res, &balancer->forces[second]);
+      GS_VecSum(&balancer->forces[second], &res, &balancer->forces[second]);
     }
   }
   for (int i = 1; i < balancer->objects_count; i++) {

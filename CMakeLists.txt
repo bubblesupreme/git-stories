@@ -4,8 +4,18 @@ project(gs_rendering C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+option(ENABLE_ASAN "ENABLE_ASAN" OFF)
+
+if(ENABLE_ASAN)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+    set (CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fno-omit-frame-pointer -fsanitize=address")
+endif()
+
 set(GO_INPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/git_info)
 set(GO_OUTPUT_BINARY ${CMAKE_CURRENT_BINARY_DIR}/git_stories)
+
 add_custom_target(go-build)
 add_custom_command(TARGET go-build
         WORKING_DIRECTORY ${GO_INPUT_DIRECTORY}
@@ -42,7 +52,20 @@ add_executable(gs_rendering
         src/utils.c
         src/phisics.c
         src/phisics.h
-        ${PROTOBUF_GENERATED})
+        src/vector.c)
 
-target_link_libraries(gs_rendering SDL2main SDL2 SDL2_gfx m protobuf-c)
-add_dependencies(gs_rendering gen-protobuf go-build)
+
+add_library(generated STATIC ${PROTOBUF_GENERATED})
+add_dependencies(generated gen-protobuf)
+target_link_libraries(generated protobuf-c)
+
+target_link_libraries(gs_rendering SDL2main SDL2 SDL2_gfx m protobuf-c generated)
+set_target_properties(gs_rendering PROPERTIES COMPILE_FLAGS "-Wall -Werror")
+add_dependencies(gs_rendering go-build)
+
+find_program(iwyu_path NAMES include-what-you-use iwyu)
+if(iwyu_path)
+    set_property(TARGET gs_rendering PROPERTY C_INCLUDE_WHAT_YOU_USE ${iwyu_path})
+else()
+    message(WARNING "Could not find the program include-what-you-use")
+endif()

@@ -19,7 +19,7 @@
 // SOFTWARE.
 
 #pragma once
-#include "utils.h"
+#include <stdio.h>
 
 typedef enum {
   GS_StatusCode_OK = 0,
@@ -28,7 +28,7 @@ typedef enum {
   GS_StatusCode_IncorrectArgc = 3,
 } GS_StatusCode;
 
-typedef struct GS_Status{
+typedef struct GS_Status {
   GS_StatusCode code;
   char *message;
 } GS_Status;

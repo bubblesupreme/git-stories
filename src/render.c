@@ -20,9 +20,17 @@
 
 #include "render.h"
 
-GS_Status *renderLine(SDL_Renderer *renderer, const GS_CircularObject *obj1, const GS_CircularObject *obj2) {
-  lineRGBA(renderer, obj1->center.x, obj1->center.y, obj2->center.x, obj2->center.y,
-                   0, 0, 0, 255);
+#include <stddef.h>
+
+#include "SDL2_gfx/SDL2_gfxPrimitives.h"
+#include "SDL_pixels.h"
+#include "status.h"
+#include "vector.h"
+
+GS_Status *renderLine(SDL_Renderer *renderer, const GS_CircularObject *obj1,
+                      const GS_CircularObject *obj2) {
+  lineRGBA(renderer, obj1->center.x, obj1->center.y, obj2->center.x,
+           obj2->center.y, 0, 0, 0, 255);
   return GS_Ok();
 }
 
@@ -43,7 +51,8 @@ GS_Status *GS_RenderFolder(SDL_Renderer *renderer, const GS_Folder *folder) {
     GS_RETURN_NOT_OK(GS_RenderFile(renderer, folder->files[i]))
   }
   for (size_t i = 0; i < folder->folders_count; i++) {
-    GS_RETURN_NOT_OK(renderLine(renderer, &folder->obj, &folder->folders[i]->obj))
+    GS_RETURN_NOT_OK(
+        renderLine(renderer, &folder->obj, &folder->folders[i]->obj))
     GS_RETURN_NOT_OK(GS_RenderFolder(renderer, folder->folders[i]))
   }
   GS_RETURN_NOT_OK(renderCircle(renderer, &folder->obj))

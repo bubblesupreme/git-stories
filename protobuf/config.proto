@@ -1,6 +1,7 @@
-syntax="proto3";
+syntax = "proto3";
 
 package config;
+option go_package = "github.com/bubblesupreme/git-stories/git_info";
 
 message CommitInfo {
   string hash = 1;
@@ -10,6 +11,4 @@ message CommitInfo {
   int32 errors = 5;
 }
 
-message OutConfig {
-  repeated CommitInfo commits = 1;
-}
+message OutConfig { repeated CommitInfo commits = 1; }

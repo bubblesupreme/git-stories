@@ -18,17 +18,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#pragma once 
+#pragma once
 
 typedef struct {
   double x;
   double y;
 } GS_Vec2;
 
-static GS_Vec2 vecMake(double x, double y) {
-  GS_Vec2 v;
-  v.x = x;
-  v.y = y;
-  return v;
-}
+void GS_VecSum(GS_Vec2 *lhs, GS_Vec2 *rhs, GS_Vec2 *res);
 
+void GS_VecDif(GS_Vec2 *lhs, GS_Vec2 *rhs, GS_Vec2 *res);
+
+void GS_VecScalarMult(GS_Vec2 *vec, double scalar, GS_Vec2 *res);
+
+void GS_VecScalarDiv(GS_Vec2 *vec, double scalar, GS_Vec2 *res);
+
+double GS_VecLen(GS_Vec2 *vec);
+
+void GS_VecNorm(GS_Vec2 *vec, GS_Vec2 *res);
+
+GS_Vec2 GS_VecMake(double x, double y);

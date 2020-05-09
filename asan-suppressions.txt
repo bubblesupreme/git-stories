@@ -1,0 +1,3 @@
+leak:_XlcDefaultMapModifiers*
+leak:libGLX_mesa.so*
+leak:pa_xmalloc0*

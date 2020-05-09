@@ -20,14 +20,9 @@
 
 #pragma once
 
-#include <SDL.h>
-#include <SDL2_gfx/SDL2_gfxPrimitives.h>
-
+#include "SDL_render.h"
 #include "objects.h"
-#include "status.h"
-
-static GS_Status *renderCircle(SDL_Renderer *renderer,
-                               const GS_CircularObject *obj);
+#include "utils.h"
 
 GS_Status *GS_RenderFile(SDL_Renderer *renderer, const GS_File *file);
 

@@ -20,10 +20,10 @@
 
 #pragma once
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "objects.h"
 #include "status.h"
-#include "utils.h"
 #include "vector.h"
 
 #define GS_INITIAL_BALANCER_CAPACITY 1024

@@ -19,8 +19,11 @@
 // SOFTWARE.
 
 #include "status.h"
+
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "utils.h"
 
 GS_Status *GS_Ok() {
   static GS_Status ok;

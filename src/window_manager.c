@@ -19,8 +19,14 @@
 // SOFTWARE.
 
 #include "window_manager.h"
-#include "render.h"
+
 #include <stdlib.h>
+#include <string.h>
+
+#include "render.h"
+#include "status.h"
+#include "utils.h"
+#include "vector.h"
 
 GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out) {
   GS_Folder *root;
@@ -40,6 +46,8 @@ GS_Status *GS_CreateWindowManager(int w, int h, GS_WindowManager **out) {
   GS_NOT_NULL(wm->window);
   wm->renderer = SDL_CreateRenderer(wm->window, -1, 0);
   GS_NOT_NULL(wm->renderer);
+  wm->currentColor = GS_MakeSDLColorRGB(0, 255, 0);
+  wm->targetColor = GS_MakeSDLColorRGB(0, 255, 0);
   *out = wm;
   return GS_Ok();
 }
@@ -65,6 +73,12 @@ GS_Status *GS_UpdateWindowManager(GS_WindowManager *wm) {
   return GS_Ok();
 }
 
+GS_Status *GS_UpdateColors(GS_WindowManager *wm) {
+  GS_UpdateColor(&wm->currentColor, &wm->targetColor, 1);
+  GS_SetGeneralColor(wm->root, wm->currentColor);
+  return GS_Ok();
+}
+
 GS_Status *GS_UpdateObjects(GS_WindowManager *wm, Config__CommitInfo *commit) {
   char *delim = "/";
   GS_Folder *parent = wm->root;
@@ -73,23 +87,20 @@ GS_Status *GS_UpdateObjects(GS_WindowManager *wm, Config__CommitInfo *commit) {
     char *ptr = strtok(commit->newfiles[i], delim);
     char *next;
 
-    while(1)
-    {
+    while (1) {
       next = strtok(NULL, delim);
-      if(next != NULL) {
+      if (next != NULL) {
         GS_Folder *f;
-        if(!GS_NameExists(parent, ptr)) {
+        if (!GS_NameExists(parent, ptr)) {
           GS_WARN_NOT_OK(GS_CreateFolder(ptr, parent, &f))
-        }
-        else {
+        } else {
           GS_WARN_NOT_OK(GS_FindFolder(parent, ptr, &f))
         }
         if (f) {
           parent = f;
         }
         ptr = next;
-      }
-      else {
+      } else {
         GS_File *file;
         GS_WARN_NOT_OK(GS_CreateFile(parent, ptr, &file))
         parent = wm->root;
@@ -102,25 +113,23 @@ GS_Status *GS_UpdateObjects(GS_WindowManager *wm, Config__CommitInfo *commit) {
     char *ptr = strtok(commit->deletedfiles[i], delim);
     char *next;
 
-    while(1)
-    {
-      printf("'%s'\n", ptr);
+    while (1) {
       next = strtok(NULL, delim);
-      if(next != NULL) {
+      if (next != NULL) {
         GS_Folder *f;
         GS_WARN_NOT_OK(GS_FindFolder(parent, ptr, &f))
         if (f) {
           parent = f;
         }
         ptr = next;
-      }
-      else {
-        GS_File *file;
+      } else {
         GS_WARN_NOT_OK(GS_RemoveFile(parent, ptr))
         parent = wm->root;
         break;
       }
     }
   }
+
+  wm->targetColor = GS_CalculateColor(commit->errors);
   return GS_Ok();
 }

@@ -18,44 +18,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package linter
+#include "vector.h"
+#include <math.h>
 
-import (
-	"errors"
-
-	"github.com/bubblesupreme/git-stories/git_info/utils"
-)
-
-var noFilesError = errors.New("there are no files matching this linter")
-
-type ILinter interface {
-	ParseOutput(output []byte, err error) (int, error)
-	CalculateResult(errors int) (int, error)
-	Run(directory string) ([]byte, error)
-	CheckError(err error) error
+void GS_VecSum(GS_Vec2 *lhs, GS_Vec2 *rhs, GS_Vec2 *res) {
+  res->x = lhs->x + rhs->x;
+  res->y = lhs->y + rhs->y;
 }
 
-type Linter struct {
-	name           string
-	parameters     []string
-	resultTemplate []byte
-	inadmissible   int
+void GS_VecDif(GS_Vec2 *lhs, GS_Vec2 *rhs, GS_Vec2 *res) {
+  res->x = lhs->x - rhs->x;
+  res->y = lhs->y - rhs->y;
 }
 
-func (linter *Linter) GetName() string {
-	return linter.name
+void GS_VecScalarMult(GS_Vec2 *vec, double scalar, GS_Vec2 *res) {
+  res->x = vec->x * scalar;
+  res->y = vec->y * scalar;
 }
 
-func (linter *Linter) GetParameters() []string {
-	return linter.parameters
+void GS_VecScalarDiv(GS_Vec2 *vec, double scalar, GS_Vec2 *res) {
+  GS_VecScalarMult(vec, 1.0 / scalar, res);
 }
 
-func (linter *Linter) Run(directory string) ([]byte, error) {
-	command := []string{linter.name}
-	command = append(command, linter.parameters...)
-	return utils.RunCommand(command, directory)
+double GS_VecLen(GS_Vec2 *vec) {
+  return sqrt(vec->x * vec->x + vec->y * vec->y);
 }
 
-func NoFilesError() error {
-	return noFilesError
+void GS_VecNorm(GS_Vec2 *vec, GS_Vec2 *res) {
+  double len = GS_VecLen(vec);
+  GS_VecScalarDiv(vec, len, res);
+}
+
+GS_Vec2 GS_VecMake(double x, double y) {
+  GS_Vec2 v;
+  v.x = x;
+  v.y = y;
+  return v;
 }

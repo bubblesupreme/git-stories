@@ -19,11 +19,11 @@
 // SOFTWARE.
 
 #pragma once
-#include "vector.h"
-#include <SDL.h>
-#include <errno.h>
-#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
+
+#include "SDL_pixels.h"
+#include "vector.h"
 
 #define GS_MAX_NAME_SIZE 128
 #define GS_INITIAL_FOLDER_CAPACITY 16
@@ -54,7 +54,14 @@ SDL_Color GS_MakeSDLColorRGB(uint8_t r, uint8_t g, uint8_t b);
 
 SDL_Color GS_MakeSDLColorGrey(uint8_t contrast);
 
-typedef struct GS_Status GS_Status;  
-GS_Status* GS_CheckArgc(int argc);
+SDL_Color GS_CalculateColor(int32_t errors);
+
+void GS_UpdateColor(SDL_Color *curColor, SDL_Color *targetColor, int8_t step);
+
+uint8_t GS_UpdateColorComponent(uint8_t curComponent, uint8_t targetComponent,
+                                int8_t step);
+
+typedef struct GS_Status GS_Status;
+GS_Status *GS_CheckArgc(int argc);
 
 void GS_RandomCirclePoint(GS_Vec2 *center, int radius, GS_Vec2 *res);
